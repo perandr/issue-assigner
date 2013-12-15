@@ -7,6 +7,7 @@
   <packaging>sonar-plugin</packaging>
   <version>0.1-SNAPSHOT</version>
 
+  <name>Autoassigner</name>
   <description>Autoassigner</description>
 
   <properties>
@@ -59,7 +60,7 @@
         <version>1.3</version>
         <extensions>true</extensions>
         <configuration>
-          <pluginClass>com.mycompany.sonar.reference.ExamplePlugin</pluginClass>
+          <pluginClass>org.perandr.autoassigner.AutoassignerPlugin</pluginClass>
         </configuration>
       </plugin>
       <plugin>
@@ -116,5 +117,4 @@
     </pluginManagement>
   </build>
 
-  <name>Autoassigner</name>
 </project>

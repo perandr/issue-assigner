@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mvn clean install
+cp target/sonar-autoassigner-plugin-0.1-SNAPSHOT.jar /home/perandr/work/software/sonarqube-4.0/extensions/plugins/
+su -l root -c "/etc/init.d/sonar restart"
