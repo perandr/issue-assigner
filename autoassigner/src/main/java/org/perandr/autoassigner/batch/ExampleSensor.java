@@ -44,6 +44,7 @@ public boolean shouldExecuteOnProject(Project project) {
     LOG.info(AutoassignerPlugin.SUBJECT_TEMPLATE_PROPERTY + "=" + value);
     LOG.info("============Date: {} ",project.getAnalysisDate());
     LOG.info("============IsLatest: {} ",project.isLatestAnalysis());
+    
 //    LOG.info("============Date: {} ",);
 //    Violation violation = Violation.;
 //	sensorContext.saveViolation(violation )
