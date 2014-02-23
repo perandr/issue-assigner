@@ -19,7 +19,8 @@
           {'k': '031bdf19-8c0c-4230-ab9e-ee0b174959b7', 'r': 'Rsquid:S106', 'l': 4, 'new': false, 's': 'MAJOR'},
           {'k': '1e7808eb-f669-421b-9ad5-1f1a10ce9eab', 'r': 'Rsquid:S1192', 'l': 4, 'new': false, 's': 'MINOR'},
           {'k': '8c7f4fb7-b197-4c88-a7e3-9f6997ad4c86', 'r': 'Rsquid:S106', 'l': 5, 'new': false, 's': 'MAJOR'},
-          {'k': 'b6f5a4e8-bcce-48bf-9be7-37308355f99b', 'r': 'Rsquid:S1220', 'l': 0, 'new': false, 's': 'MAJOR'}
+          {'k': 'b6f5a4e8-bcce-48bf-9be7-37308355f99b', 'r': 'Rsquid:S1220', 'l': 0, 'new': false, 's': 'MAJOR'},
+          {'k': 'ebbd661f-78f8-49a9-9192-b08bc98b40b0', 'r': 'Rsquid:S106', 'l': 7, 'new': false, 's': 'MAJOR'}
       ]
       
     ];
@@ -121,7 +122,7 @@
        },
        { "key": "MAJOR",
          "label": "Major",
-         "total": 5,
+         "total": 6,
          "newtotal": 0
        },
        { "key": "INFO",
@@ -159,7 +160,7 @@
        },
        { "key": "squid:S106",
          "label": "System.out and System.err should not be used as loggers",
-         "total": 2,
+         "total": 3,
          "newtotal": 0
        }
     ].sort(function(a, b) {
@@ -193,7 +194,7 @@
 <div id="reportHeader">
   <div id="logo"><img src="issuesreport_files/sonarqube-24x100.png" alt="SonarQube"/></div>
   <div class="title">Issues Report</div>
-  <div class="subtitle">issue-maker - Feb 23, 2014 12:16:23 PM</div>
+  <div class="subtitle">issue-maker - Feb 23, 2014 12:18:35 PM</div>
 </div>
 
 <div id="content">
@@ -209,11 +210,11 @@
       </td>
       <td align="center" width="33%">
         <h3>Resolved issues</h3>
-        <span class="big better">4</span>
+        <span class="big better">3</span>
       </td>
       <td align="center" width="33%" class="all">
         <h3>Issues</h3>
-        <span class="big">8</span>
+        <span class="big">9</span>
       </td>
     </tr>
     </tbody>
@@ -242,10 +243,10 @@
             <span>0</span>
         </td>
         <td align="right">
-            <span class="better">4</span>
+            <span class="better">3</span>
         </td>
         <td align="right" class="all">
-          2
+          3
         </td>
       </tr>
       <tr class="hoverable all">
@@ -607,11 +608,11 @@
         <br/>New issues
       </th>
       <th align="right" width="1%" nowrap class="resource-details-1">
-          <span class="better" id="resolved-total">4</span>
+          <span class="better" id="resolved-total">3</span>
         <br/>Resolved issues
       </th>
       <th align="right" width="1%" nowrap class="resource-details-1 all">
-        <span id="current-total">4</span><br/>Issues
+        <span id="current-total">5</span><br/>Issues
       </th>
     </tr>
     </thead>
@@ -627,10 +628,10 @@
             <span>0</span>
         </td>
         <td align="right">
-            <span class="better">4</span>
+            <span class="better">3</span>
         </td>
         <td align="right" class="all">
-          2
+          3
         </td>
       </tr>
       <tr class="hoverable all">
@@ -762,7 +763,7 @@
 
                           </div>
                             <div class="discussionComment">
-                            Define a constant instead of duplicating this literal "Hello World 1!" 2 times.
+                            Define a constant instead of duplicating this literal "Hello World 1!" 3 times.
                             </div>
                         </div>
                     </td>
@@ -802,7 +803,7 @@
                 <tr id="1L6" class="row">
                   <td class="lid ">6</td>
                   <td class="line ">
-                    <pre>  }</pre>
+                    <pre></pre>
                   </td>
                 </tr>
                 <tr id="1S6" class="blockSep">
@@ -811,10 +812,51 @@
                 <tr id="1L7" class="row">
                   <td class="lid ">7</td>
                   <td class="line ">
-                    <pre>  </pre>
+                    <pre>    System.out.println(&quot;Hello World 1!&quot;);</pre>
                   </td>
                 </tr>
                 <tr id="1S7" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                  <tr id="1LV7" class="row">
+                    <td class="lid"></td>
+                    <td class="issues">
+                        <div class="issue" id="ebbd661f-78f8-49a9-9192-b08bc98b40b0">
+                          <div class="vtitle">
+                            <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">System.out and System.err should not be used as loggers</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
+
+                            <span class="issue_date">
+                                Dec 15, 2013
+                            </span>
+                            &nbsp;
+
+                          </div>
+                            <div class="discussionComment">
+                            Replace this usage of System.out or System.err by a logger.
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                <tr id="1L8" class="row">
+                  <td class="lid ">8</td>
+                  <td class="line ">
+                    <pre>  }</pre>
+                  </td>
+                </tr>
+                <tr id="1S8" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="1L9" class="row">
+                  <td class="lid ">9</td>
+                  <td class="line ">
+                    <pre>  </pre>
+                  </td>
+                </tr>
+                <tr id="1S9" class="blockSep">
                   <td colspan="2"></td>
                 </tr>
           </table>
