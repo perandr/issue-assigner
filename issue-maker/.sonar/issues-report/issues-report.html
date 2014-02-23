@@ -1,0 +1,833 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Issues report of issue-maker</title>
+  <link href="issuesreport_files/sonar.css" media="all" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="issuesreport_files/favicon.ico">
+  <script type="text/javascript" src="issuesreport_files/jquery.min.js"></script>
+  <script type="text/javascript">
+    var issuesPerResource = [
+      [
+          {'k': '2486deec-0aaa-4a96-8453-d571e4c98da9', 'r': 'Rsquid:S1135', 'l': 5, 'new': false, 's': 'INFO'},
+          {'k': '325260d0-741b-427f-9936-91a0d5f73cce', 'r': 'Rsquid:S00105', 'l': 0, 'new': false, 's': 'MINOR'},
+          {'k': '8fa30048-0cbf-4df3-85c1-a371da5e0944', 'r': 'Rsquid:S1220', 'l': 0, 'new': false, 's': 'MAJOR'},
+          {'k': 'b3eaec14-f776-4e9e-9b85-583a140c571d', 'r': 'Rsquid:S1118', 'l': 2, 'new': false, 's': 'MAJOR'}
+      ]
+      ,
+      [
+          {'k': '031bdf19-8c0c-4230-ab9e-ee0b174959b7', 'r': 'Rsquid:S106', 'l': 4, 'new': false, 's': 'MAJOR'},
+          {'k': '1e7808eb-f669-421b-9ad5-1f1a10ce9eab', 'r': 'Rsquid:S1192', 'l': 4, 'new': false, 's': 'MINOR'},
+          {'k': '8c7f4fb7-b197-4c88-a7e3-9f6997ad4c86', 'r': 'Rsquid:S106', 'l': 5, 'new': false, 's': 'MAJOR'},
+          {'k': 'b6f5a4e8-bcce-48bf-9be7-37308355f99b', 'r': 'Rsquid:S1220', 'l': 0, 'new': false, 's': 'MAJOR'}
+      ]
+      
+    ];
+    var nbResources = 2;
+    var separators = new Array();
+
+    function showLine(fileIndex, lineId) {
+      var elt = $('#' + fileIndex + 'L' + lineId);
+      if (elt != null) {
+        elt.show();
+      }
+      elt = $('#' + fileIndex + 'LV' + lineId);
+      if (elt != null) {
+        elt.show();
+      }
+    }
+
+    /* lineIds must be sorted */
+    function showLines(fileIndex, lineIds) {
+      var lastSeparatorId = 9999999;
+      for (var lineIndex = 0; lineIndex < lineIds.length; lineIndex++) {
+        var lineId = lineIds[lineIndex];
+        if (lineId > 0) {
+          if (lineId > lastSeparatorId) {
+            var separator = $('#' + fileIndex + 'S' + lastSeparatorId);
+            if (separator != null) {
+              separator.addClass('visible');
+              separators.push(separator);
+            }
+          }
+
+          for (var i = -2; i < 3; ++i) {
+            showLine(fileIndex, lineId + i);
+          }
+          lastSeparatorId = lineId + 2;
+        }
+      }
+    }
+     function hideAll() {
+       $('tr.row').hide();
+       $('div.issue').hide();
+       for (var separatorIndex = 0; separatorIndex < separators.length; separatorIndex++) {
+         separators[separatorIndex].removeClass('visible');
+       }
+       separators.length = 0;
+       $('.sources td.ko').removeClass('ko');
+     }
+
+     function showIssues(fileIndex, issues) {
+       $.each(issues, function(index, issue) {
+         $('#' + issue['k']).show();
+         $('#' + fileIndex + 'L' + issue['l'] + ' td.line').addClass('ko');
+       });
+       var showResource = issues.length > 0;
+       if (showResource) {
+         $('#resource-' + fileIndex).show();
+       } else {
+         $('#resource-' + fileIndex).hide();
+       }
+     }
+
+
+    function refreshFilters(updateSelect) {
+      var onlyNewIssues = $('#new_filter').is(':checked');
+
+      if (updateSelect) {
+        populateSelectFilter(onlyNewIssues);
+      }
+      var ruleFilter = $('#rule_filter').val();
+
+      hideAll();
+      if (onlyNewIssues) {
+        $('.all').addClass('all-masked');
+      } else {
+        $('.all').removeClass('all-masked');
+      }
+      for (var resourceIndex = 0; resourceIndex < nbResources; resourceIndex++) {
+        var filteredIssues = $.grep(issuesPerResource[resourceIndex], function(v) {
+              return (!onlyNewIssues || v['new']) && (ruleFilter == '' || v['r'] == ruleFilter || v['s'] == ruleFilter);
+            }
+        );
+
+        var linesToDisplay = $.map(filteredIssues, function(v, i) {
+          return v['l'];
+        });
+
+        linesToDisplay.sort();// the showLines() requires sorted ids
+        showLines(resourceIndex, linesToDisplay);
+        showIssues(resourceIndex, filteredIssues);
+      }
+    }
+
+
+    var severityFilter = [
+       { "key": "MINOR",
+         "label": "Minor",
+         "total": 2,
+         "newtotal": 0
+       },
+       { "key": "MAJOR",
+         "label": "Major",
+         "total": 5,
+         "newtotal": 0
+       },
+       { "key": "INFO",
+         "label": "Info",
+         "total": 1,
+         "newtotal": 0
+       }
+    ];
+
+    var ruleFilter = [
+       { "key": "squid:S00105",
+         "label": "Tabulation characters should not be used",
+         "total": 1,
+         "newtotal": 0
+       },
+       { "key": "squid:S1220",
+         "label": "The default unnamed package should not be used",
+         "total": 2,
+         "newtotal": 0
+       },
+       { "key": "squid:S1192",
+         "label": "String literals should not be duplicated",
+         "total": 1,
+         "newtotal": 0
+       },
+       { "key": "squid:S1118",
+         "label": "Utility classes should not have a public constructor",
+         "total": 1,
+         "newtotal": 0
+       },
+       { "key": "squid:S1135",
+         "label": "TODO tags should be handled",
+         "total": 1,
+         "newtotal": 0
+       },
+       { "key": "squid:S106",
+         "label": "System.out and System.err should not be used as loggers",
+         "total": 2,
+         "newtotal": 0
+       }
+    ].sort(function(a, b) {
+        var x = a.label; var y = b.label;
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+
+    function populateSelectFilter(onlyNewIssues) {
+       var ruleFilterSelect = $('#rule_filter');
+       ruleFilterSelect.empty().append(function() {
+         var output = '';
+         output += '<option value="" selected>Filter by:</option>';
+         output += '<optgroup label="Severity">';
+         $.each(severityFilter, function(key, value) {
+           if ((!onlyNewIssues && value.total > 0) || value.newtotal > 0) {
+             output += '<option value="' + value.key + '">' + value.label + ' (' + (onlyNewIssues ? value.newtotal : value.total) + ')</option>';
+           }
+         });
+         output += '<optgroup label="Rule">';
+         $.each(ruleFilter, function(key, value) {
+           if ((!onlyNewIssues && value.total > 0) || value.newtotal > 0) {
+             output += '<option value="R' + value.key + '">' + value.label + ' (' + (onlyNewIssues ? value.newtotal : value.total) + ')</option>';
+           }
+         });
+         return output;
+       });
+    }
+  </script>
+</head>
+<body>
+<div id="reportHeader">
+  <div id="logo"><img src="issuesreport_files/sonarqube-24x100.png" alt="SonarQube"/></div>
+  <div class="title">Issues Report</div>
+  <div class="subtitle">issue-maker - Feb 23, 2014 12:16:23 PM</div>
+</div>
+
+<div id="content">
+
+
+  <div id="summary">
+  <table width="100%">
+    <tbody>
+    <tr>
+      <td align="center" width="33%">
+        <h3>New issues</h3>
+        <span class="big">0</span>
+      </td>
+      <td align="center" width="33%">
+        <h3>Resolved issues</h3>
+        <span class="big better">4</span>
+      </td>
+      <td align="center" width="33%" class="all">
+        <h3>Issues</h3>
+        <span class="big">8</span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <br/>
+  <table width="100%" class="data">
+    <thead>
+    <tr class="total">
+      <th colspan="2" align="left">
+          Issues per Rule
+      </th>
+      <th align="right" width="1%" nowrap>New issues</th>
+      <th align="right" width="1%" nowrap>Resolved issues</th>
+      <th align="right" width="1%" nowrap class="all">Issues</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          System.out and System.err should not be used as loggers
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span class="better">4</span>
+        </td>
+        <td align="right" class="all">
+          2
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          Utility classes should not have a public constructor
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          The default unnamed package should not be used
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          2
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MINOR" title="MINOR" src="issuesreport_files/MINOR.png">
+        </td>
+        <td align="left">
+          Tabulation characters should not be used
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MINOR" title="MINOR" src="issuesreport_files/MINOR.png">
+        </td>
+        <td align="left">
+          String literals should not be duplicated
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="INFO" title="INFO" src="issuesreport_files/INFO.png">
+        </td>
+        <td align="left">
+          TODO tags should be handled
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <br/>
+
+  <div class="banner">
+    <input type="checkbox" id="new_filter" onclick="refreshFilters(true)" checked="checked" /> <label for="new_filter">Only NEW
+    issues</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+
+    <select id="rule_filter" onchange="refreshFilters(false)">
+    </select>
+  </div>
+
+  <div id="summary-per-file">
+  <table width="100%" class="data all" id="resource-0">
+    <thead>
+    <tr class="total">
+      <th align="left" colspan="2" nowrap>
+        <div class="file_title">
+          <img src="issuesreport_files/FIL.png" title="Resource icon"/>
+          <a href="#" onclick="$('.resource-details-0').toggleClass('masked'); return false;" style="color: black">ApplicationRunner</a>
+        </div>
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-0">
+          <span id="new-total">0</span>
+        <br/>New issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-0">
+          <span id="resolved-total">0</span>
+        <br/>Resolved issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-0 all">
+        <span id="current-total">4</span><br/>Issues
+      </th>
+    </tr>
+    </thead>
+    <tbody class="resource-details-0">
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          Utility classes should not have a public constructor
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          The default unnamed package should not be used
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MINOR" title="MINOR" src="issuesreport_files/MINOR.png">
+        </td>
+        <td align="left">
+          Tabulation characters should not be used
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="INFO" title="INFO" src="issuesreport_files/INFO.png">
+        </td>
+        <td align="left">
+          TODO tags should be handled
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="globalIssues">
+        <td colspan="5">
+            <div class="issue" id="325260d0-741b-427f-9936-91a0d5f73cce">
+              <div class="vtitle">
+
+                <img alt="MINOR" title="MINOR" src="issuesreport_files/MINOR.png">&nbsp;
+                <img src="issuesreport_files/sep12.png"> <span class="rulename">Tabulation characters should not be used</span>
+                &nbsp;
+                <img src="issuesreport_files/sep12.png">&nbsp;
+
+                <span class="issue_date">
+                    Dec 15, 2013
+                </span>
+              </div>
+                <div class="discussionComment">
+                Replace all tab characters in this file by sequences of white-spaces.
+                </div>
+            </div>
+            <div class="issue" id="8fa30048-0cbf-4df3-85c1-a371da5e0944">
+              <div class="vtitle">
+
+                <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">&nbsp;
+                <img src="issuesreport_files/sep12.png"> <span class="rulename">The default unnamed package should not be used</span>
+                &nbsp;
+                <img src="issuesreport_files/sep12.png">&nbsp;
+
+                <span class="issue_date">
+                    Dec 15, 2013
+                </span>
+              </div>
+                <div class="discussionComment">
+                Move this file to a named package.
+                </div>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="5">
+          <table class="sources" border="0" cellpadding="0" cellspacing="0">
+                <tr id="0L1" class="row">
+                  <td class="lid ">1</td>
+                  <td class="line ">
+                    <pre></pre>
+                  </td>
+                </tr>
+                <tr id="0S1" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="0L2" class="row">
+                  <td class="lid ">2</td>
+                  <td class="line ">
+                    <pre>public class ApplicationRunner {</pre>
+                  </td>
+                </tr>
+                <tr id="0S2" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                  <tr id="0LV2" class="row">
+                    <td class="lid"></td>
+                    <td class="issues">
+                        <div class="issue" id="b3eaec14-f776-4e9e-9b85-583a140c571d">
+                          <div class="vtitle">
+                            <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">Utility classes should not have a public constructor</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
+
+                            <span class="issue_date">
+                                Dec 15, 2013
+                            </span>
+                            &nbsp;
+
+                          </div>
+                            <div class="discussionComment">
+                            Add a private constructor to hide the implicit public one.
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                <tr id="0L3" class="row">
+                  <td class="lid ">3</td>
+                  <td class="line ">
+                    <pre></pre>
+                  </td>
+                </tr>
+                <tr id="0S3" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="0L4" class="row">
+                  <td class="lid ">4</td>
+                  <td class="line ">
+                    <pre>	public static void main(String[] args) {</pre>
+                  </td>
+                </tr>
+                <tr id="0S4" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="0L5" class="row">
+                  <td class="lid ">5</td>
+                  <td class="line ">
+                    <pre>		// TODO Auto-generated method stub</pre>
+                  </td>
+                </tr>
+                <tr id="0S5" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                  <tr id="0LV5" class="row">
+                    <td class="lid"></td>
+                    <td class="issues">
+                        <div class="issue" id="2486deec-0aaa-4a96-8453-d571e4c98da9">
+                          <div class="vtitle">
+                            <img alt="INFO" title="INFO" src="issuesreport_files/INFO.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">TODO tags should be handled</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
+
+                            <span class="issue_date">
+                                Dec 15, 2013
+                            </span>
+                            &nbsp;
+
+                          </div>
+                            <div class="discussionComment">
+                            Complete the task associated to this TODO comment.
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                <tr id="0L6" class="row">
+                  <td class="lid ">6</td>
+                  <td class="line ">
+                    <pre></pre>
+                  </td>
+                </tr>
+                <tr id="0S6" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="0L7" class="row">
+                  <td class="lid ">7</td>
+                  <td class="line ">
+                    <pre>	}</pre>
+                  </td>
+                </tr>
+                <tr id="0S7" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table width="100%" class="data all" id="resource-1">
+    <thead>
+    <tr class="total">
+      <th align="left" colspan="2" nowrap>
+        <div class="file_title">
+          <img src="issuesreport_files/FIL.png" title="Resource icon"/>
+          <a href="#" onclick="$('.resource-details-1').toggleClass('masked'); return false;" style="color: black">Helloworld1</a>
+        </div>
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-1">
+          <span id="new-total">0</span>
+        <br/>New issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-1">
+          <span class="better" id="resolved-total">4</span>
+        <br/>Resolved issues
+      </th>
+      <th align="right" width="1%" nowrap class="resource-details-1 all">
+        <span id="current-total">4</span><br/>Issues
+      </th>
+    </tr>
+    </thead>
+    <tbody class="resource-details-1">
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          System.out and System.err should not be used as loggers
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span class="better">4</span>
+        </td>
+        <td align="right" class="all">
+          2
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">
+        </td>
+        <td align="left">
+          The default unnamed package should not be used
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="hoverable all">
+        <td width="20">
+          <img alt="MINOR" title="MINOR" src="issuesreport_files/MINOR.png">
+        </td>
+        <td align="left">
+          String literals should not be duplicated
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right">
+            <span>0</span>
+        </td>
+        <td align="right" class="all">
+          1
+        </td>
+      </tr>
+      <tr class="globalIssues">
+        <td colspan="5">
+            <div class="issue" id="b6f5a4e8-bcce-48bf-9be7-37308355f99b">
+              <div class="vtitle">
+
+                <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">&nbsp;
+                <img src="issuesreport_files/sep12.png"> <span class="rulename">The default unnamed package should not be used</span>
+                &nbsp;
+                <img src="issuesreport_files/sep12.png">&nbsp;
+
+                <span class="issue_date">
+                    Dec 15, 2013
+                </span>
+              </div>
+                <div class="discussionComment">
+                Move this file to a named package.
+                </div>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="5">
+          <table class="sources" border="0" cellpadding="0" cellspacing="0">
+                <tr id="1L1" class="row">
+                  <td class="lid ">1</td>
+                  <td class="line ">
+                    <pre>public class Helloworld1 {</pre>
+                  </td>
+                </tr>
+                <tr id="1S1" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="1L2" class="row">
+                  <td class="lid ">2</td>
+                  <td class="line ">
+                    <pre></pre>
+                  </td>
+                </tr>
+                <tr id="1S2" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="1L3" class="row">
+                  <td class="lid ">3</td>
+                  <td class="line ">
+                    <pre>  public void printHelloWorld1() {</pre>
+                  </td>
+                </tr>
+                <tr id="1S3" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="1L4" class="row">
+                  <td class="lid ">4</td>
+                  <td class="line ">
+                    <pre>    System.out.println(&quot;Hello World 1!&quot;);</pre>
+                  </td>
+                </tr>
+                <tr id="1S4" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                  <tr id="1LV4" class="row">
+                    <td class="lid"></td>
+                    <td class="issues">
+                        <div class="issue" id="031bdf19-8c0c-4230-ab9e-ee0b174959b7">
+                          <div class="vtitle">
+                            <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">System.out and System.err should not be used as loggers</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
+
+                            <span class="issue_date">
+                                Dec 15, 2013
+                            </span>
+                            &nbsp;
+
+                          </div>
+                            <div class="discussionComment">
+                            Replace this usage of System.out or System.err by a logger.
+                            </div>
+                        </div>
+                        <div class="issue" id="1e7808eb-f669-421b-9ad5-1f1a10ce9eab">
+                          <div class="vtitle">
+                            <img alt="MINOR" title="MINOR" src="issuesreport_files/MINOR.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">String literals should not be duplicated</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
+
+                            <span class="issue_date">
+                                Dec 15, 2013
+                            </span>
+                            &nbsp;
+
+                          </div>
+                            <div class="discussionComment">
+                            Define a constant instead of duplicating this literal "Hello World 1!" 2 times.
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                <tr id="1L5" class="row">
+                  <td class="lid ">5</td>
+                  <td class="line ">
+                    <pre>    System.out.println(&quot;Hello World 1!&quot;);</pre>
+                  </td>
+                </tr>
+                <tr id="1S5" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                  <tr id="1LV5" class="row">
+                    <td class="lid"></td>
+                    <td class="issues">
+                        <div class="issue" id="8c7f4fb7-b197-4c88-a7e3-9f6997ad4c86">
+                          <div class="vtitle">
+                            <img alt="MAJOR" title="MAJOR" src="issuesreport_files/MAJOR.png">&nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;<span
+                              class="rulename">System.out and System.err should not be used as loggers</span>
+                            &nbsp;
+                            <img src="issuesreport_files/sep12.png">&nbsp;
+
+                            <span class="issue_date">
+                                Dec 15, 2013
+                            </span>
+                            &nbsp;
+
+                          </div>
+                            <div class="discussionComment">
+                            Replace this usage of System.out or System.err by a logger.
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                <tr id="1L6" class="row">
+                  <td class="lid ">6</td>
+                  <td class="line ">
+                    <pre>  }</pre>
+                  </td>
+                </tr>
+                <tr id="1S6" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+                <tr id="1L7" class="row">
+                  <td class="lid ">7</td>
+                  <td class="line ">
+                    <pre>  </pre>
+                  </td>
+                </tr>
+                <tr id="1S7" class="blockSep">
+                  <td colspan="2"></td>
+                </tr>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function() {
+    refreshFilters(true);
+  });
+</script>
+</body>
+</html>
